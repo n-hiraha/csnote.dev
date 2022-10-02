@@ -1,3 +1,4 @@
+/* eslint-disable */
 import Image from 'next/future/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -255,7 +256,9 @@ export function Header() {
   let isInitial = useRef(true)
 
   useEffect(() => {
-    let downDelay = avatarRef.current?.offsetTop ?? 0
+    if (!avatarRef.current) return
+
+    let downDelay = avatarRef.current['offsetTop'] ?? 0
     let upDelay = 64
 
     function setProperty(property, value) {
@@ -267,6 +270,9 @@ export function Header() {
     }
 
     function updateHeaderStyles() {
+      if (!headerRef.current) return
+
+      // @ts-ignore
       let { top, height } = headerRef.current.getBoundingClientRect()
       let scrollY = clamp(
         window.scrollY,
@@ -345,6 +351,7 @@ export function Header() {
     window.addEventListener('resize', updateStyles)
 
     return () => {
+      // @ts-ignore
       window.removeEventListener('scroll', updateStyles, { passive: true })
       window.removeEventListener('resize', updateStyles)
     }
@@ -371,6 +378,7 @@ export function Header() {
             >
               <div
                 className="top-[var(--avatar-top,theme(spacing.3))] w-full"
+                // @ts-ignore
                 style={{ position: 'var(--header-inner-position)' }}
               >
                 <div className="relative">
@@ -394,6 +402,7 @@ export function Header() {
         <div
           ref={headerRef}
           className="top-0 z-10 h-16 pt-6"
+          // @ts-ignore
           style={{ position: 'var(--header-position)' }}
         >
           <Container
@@ -403,8 +412,8 @@ export function Header() {
             <div className="relative flex gap-4">
               <div className="flex flex-1">
                 {!isHomePage && (
-                  <AvatarContainer>
-                    <Avatar />
+                  <AvatarContainer className="">
+                    <Avatar className="" />
                   </AvatarContainer>
                 )}
               </div>

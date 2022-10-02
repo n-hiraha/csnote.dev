@@ -11,6 +11,7 @@ import clsx from 'clsx'
 type Props = {
   children: React.ReactNode
   className?: string
+  style?: any
 }
 
 const OuterContainer = forwardRef<HTMLDivElement, Props>(
