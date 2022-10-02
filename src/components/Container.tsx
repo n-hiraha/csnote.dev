@@ -1,12 +1,5 @@
-import {
-  DetailedHTMLProps,
-  FC,
-  forwardRef,
-  HTMLAttributes,
-  RefAttributes,
-  VFC,
-} from 'react'
 import clsx from 'clsx'
+import React, { forwardRef } from 'react'
 
 type Props = {
   children: React.ReactNode
@@ -18,10 +11,10 @@ const OuterContainer = forwardRef<HTMLDivElement, Props>(
   function OuterContainer({ className, children, ...props }, ref) {
     return (
       <div ref={ref} className={clsx('sm:px-8', className)} {...props}>
-        <div className="mx-auto max-w-7xl lg:px-8">{children}</div>
+        <div className='mx-auto max-w-7xl lg:px-8'>{children}</div>
       </div>
     )
-  }
+  },
 )
 
 const InnerContainer = forwardRef<HTMLDivElement, Props>(
@@ -32,10 +25,10 @@ const InnerContainer = forwardRef<HTMLDivElement, Props>(
         className={clsx('relative px-4 sm:px-8 lg:px-12', className)}
         {...props}
       >
-        <div className="mx-auto max-w-2xl lg:max-w-5xl">{children}</div>
+        <div className='mx-auto max-w-2xl lg:max-w-5xl'>{children}</div>
       </div>
     )
-  }
+  },
 )
 
 export interface CompoundedComponent
@@ -48,7 +41,7 @@ export interface CompoundedComponent
 
 export const Container = forwardRef<HTMLDivElement, Props>(function Container(
   { children, ...props },
-  ref
+  ref,
 ) {
   return (
     <OuterContainer ref={ref} {...props}>

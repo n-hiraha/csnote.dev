@@ -35,23 +35,23 @@ const modeScript = `
   }
 `
 
-export default function Document() {
+export default function MyDocument() {
   return (
-    <Html className="h-full antialiased" lang="en">
+    <Html className='h-full antialiased' lang='en'>
       <Head>
         <script dangerouslySetInnerHTML={{ __html: modeScript }} />
         <link
-          rel="alternate"
-          type="application/rss+xml"
+          rel='alternate'
+          type='application/rss+xml'
           href={`${process.env.NEXT_PUBLIC_SITE_URL}/rss/feed.xml`}
         />
         <link
-          rel="alternate"
-          type="application/feed+json"
+          rel='alternate'
+          type='application/feed+json'
           href={`${process.env.NEXT_PUBLIC_SITE_URL}/rss/feed.json`}
         />
       </Head>
-      <body className="flex h-full flex-col bg-zinc-50 dark:bg-black">
+      <body className='flex h-full flex-col bg-zinc-50 dark:bg-black'>
         <Main />
         <NextScript />
       </body>
