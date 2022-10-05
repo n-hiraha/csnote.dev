@@ -1,0 +1,157 @@
+import { ArticleLayout } from '@/components/ArticleLayout'
+
+export const meta = {
+  author: 'Naoki Hirahara',
+  date: '2021-06-10',
+  title: '共通鍵/公開鍵暗号方式/電子署名/sshの認証方式',
+  description:
+  '共通鍵/公開鍵暗号方式/電子署名/sshの認証方式'
+}
+
+export default (props) => <ArticleLayout meta={meta} {...props} />
+
+## ネットワークにおいてなぜ暗号化が必要なのか？
+
+インターネット上には悪意のあるユーザーが常に潜んでおり、ネットワーク上での通信を傍受したり、データを改ざんしたりと一定のリスクが存在する。
+
+そのため、通信時にも傍受されない仕組みや、傍受された場合に複合できない仕組みが必要である。
+
+### SSL (Secure Sockets Layer) って？
+
+別名はHTTPS化。訪問者のブラウザとサーバー間のデータ通信を暗号化する技術。セキュリティプロトコル。
+
+Chromeでは、2018年からSSL化されていないWebサイトでは「保護されていない通信」と表示されるようになった。
+
+![https://pxd.co.jp/wp/wp-content/uploads/example.com_-2.jpg](https://pxd.co.jp/wp/wp-content/uploads/example.com_-2.jpg)
+
+[Google Requires All Sites to Use SSL | Faster Solutions](https://fastersolutions.com/what-do-googles-ssl-requirements-mean-for-you/)
+
+### TLS (Transport Layer Security ) って？
+
+SSLの次世代規格なプロトコル。TLSが使用されていても、SSLのネームが普及しているため、TLSもSSL化と同様に呼ばれる。
+
+### HTTP (Hyper Text Transfer Protocol) って？
+
+クライアントとサーバとの間で通信する時のプロトコル。
+
+### HTTPS (Hyper Text Tranfer Protocol Secure) って？
+
+クライアントとサーバーとの間で通信する時のプロトコル。厳密にはTLSが使用されているが、SSLとよんだり、SSL/TLSと呼ばれたりもする。
+
+## 共通鍵暗号方式
+
+暗号化と複合に使う鍵が同一である暗号方式。
+
+![https://udemy.benesse.co.jp/wp-content/uploads/ca2ac4ed93cf92e3341f490b3a143cac.png](https://udemy.benesse.co.jp/wp-content/uploads/ca2ac4ed93cf92e3341f490b3a143cac.png)
+
+上記のように、1つの共通鍵を用いて暗号化、復号化を行う。
+
+[共通鍵暗号方式とは｜「分かりそう」で「分からない」でも「分かった」気になれるIT用語辞典](https://wa3.i-3-i.info/word1837.html)
+
+### エニグマ暗号って？
+
+第二次世界大戦時にドイツが用いた暗号。共通鍵暗号方式。
+
+[https://www.youtube.com/watch?v=7dSVR_zuJJs](https://www.youtube.com/watch?v=7dSVR_zuJJs)
+
+[https://www.youtube.com/watch?v=v1rUoMZRjoQ](https://www.youtube.com/watch?v=v1rUoMZRjoQ)
+
+## 公開鍵暗号方式
+
+暗号化と復号化に別の鍵を用いる暗号方式。
+
+暗号時に使用する鍵を**公開鍵**、複合に使用する鍵を**秘密鍵**という。
+
+![https://udemy.benesse.co.jp/wp-content/uploads/9248e5273e5c4c77a4b2a2bd010cced3.png](https://udemy.benesse.co.jp/wp-content/uploads/9248e5273e5c4c77a4b2a2bd010cced3.png)
+
+### 公開鍵暗号方式のメリット
+
+- データの安全性の高さ
+
+### RSA方式 (R.L.Rivest, A.Shamir, L.Adleman)
+
+公開鍵暗号方式で使われる暗号化アルゴリズム。
+
+大きな数字を素因数分解するには、総当たりする必要があり、膨大な時間がかかるという困難さを利用している。
+
+![https://static.it-trend.jp/article/img/64-0056_1_2.png](https://static.it-trend.jp/article/img/64-0056_1_2.png)
+
+RSA方式は送信者のIDを確認するための電子署名に使用されている。
+
+[RSA暗号とは？仕組みや応用事例を初心者にもわかりやすく解説！｜ITトレンド](https://it-trend.jp/encryption/article/64-0056)
+
+### DH方式 (Diffie, Hellman)
+
+共通鍵暗号方式で使う共通鍵を受け渡すアルゴリズムの一つ。データの暗号化ではなく、**共通鍵の交換の際に使用される**。
+
+特徴として、共通鍵を交換しているのではなく、乱数と共通鍵から生成した公開情報を送受信することで、共通鍵そのものを知られることなく安全に鍵の送受信ができる。
+
+![https://milestone-of-se.nesuke.com/wp-content/uploads/2020/10/dh-01.png](https://milestone-of-se.nesuke.com/wp-content/uploads/2020/10/dh-01.png)
+
+数学の離散対数を用いて逆算の困難性を利用し、TLS (Transport Layer Security) で使われている。
+
+[DH法とは｜「分かりそう」で「分からない」でも「分かった」気になれるIT用語辞典](https://wa3.i-3-i.info/word16296.html)
+
+### RSA方式とDH方式の２つの違い
+
+どちらも数学的問題を用いたアルゴリズムを利用している点は類似し、RSA方式は巨大な素因数分解の困難さを利用
+
+大きな違いは、DH方式は鍵交換アルゴリズムでありRSA方式は公開鍵暗号化である。
+
+[Copy of 比較](https://www.notion.so/6f581cc7f51e4d5f97631b50d878b1aa)
+
+## 公開鍵暗号方式と共通鍵暗号方式の違い
+
+公開鍵暗号方式では公開鍵と秘密鍵の2つを用いるが、共通鍵暗号方式では1つの鍵のみを用いる。
+
+## 電子署名とは？
+
+紙文書のサインや印鑑を電子的に行うもの。
+
+![https://jp.globalsign.com/documentsigning/images/ill_digitalsign_v2.png](https://jp.globalsign.com/documentsigning/images/ill_digitalsign_v2.png)
+
+### 電子署名は公開鍵暗号のRSA方式を利用している
+
+RSA方式を逆の方向に利用したデジタル署名
+
+![https://udemy.benesse.co.jp/wp-content/uploads/1673947f9ea8d1b4663334cf51a65280.png](https://udemy.benesse.co.jp/wp-content/uploads/1673947f9ea8d1b4663334cf51a65280.png)
+
+ちなみに電子署名はコロナ禍でのITトレンドとして普及が推進されているものでもある。
+
+海外ではDocusignが有名↓
+
+[ドキュサイン｜電子署名、デジタル・ビジネス、ペーパレスソリューション](https://www.docusign.jp/)
+
+## SSH (Secure Shell)とは
+
+ネットワークサービスを安全に操作するために暗号化を提供するネットワーク・プロトコル。安全に別なコンピュータにログインして操作する事ができる。
+
+![https://www.ssh.com/hubfs/Imported_Blog_Media/How_does_the_SSH_protocol_work_-2.png](https://www.ssh.com/hubfs/Imported_Blog_Media/How_does_the_SSH_protocol_work_-2.png)
+
+prostudyのサーバーにSSH接続してみた例。
+
+![https://i.gyazo.com/fb22700a7bb5372483bb956d3d6423b2.png](https://i.gyazo.com/fb22700a7bb5372483bb956d3d6423b2.png)
+
+## SSHの認証方式
+
+SSHの主要な認証方式にはpassword認証と公開鍵認証がある。
+
+### password認証
+
+デフォルトの認証方式。
+
+prostudyではパスワードを入力して認証している。
+
+![7%207%20%E5%85%B1%E9%80%9A%E9%8D%B5%20%E5%85%AC%E9%96%8B%E9%8D%B5%E6%9A%97%E5%8F%B7%E6%96%B9%E5%BC%8F%20%E9%9B%BB%E5%AD%90%E7%BD%B2%E5%90%8D%20ssh%E3%81%AE%E8%AA%8D%E8%A8%BC%E6%96%B9%E5%BC%8F%202f5e3064baa94c6fa2dfe68d421e3a31/_2021-07-07_19.06.16.png](7%207%20%E5%85%B1%E9%80%9A%E9%8D%B5%20%E5%85%AC%E9%96%8B%E9%8D%B5%E6%9A%97%E5%8F%B7%E6%96%B9%E5%BC%8F%20%E9%9B%BB%E5%AD%90%E7%BD%B2%E5%90%8D%20ssh%E3%81%AE%E8%AA%8D%E8%A8%BC%E6%96%B9%E5%BC%8F%202f5e3064baa94c6fa2dfe68d421e3a31/_2021-07-07_19.06.16.png)
+
+### 公開鍵認証
+
+鍵を持っている人(パソコン)からのみ認証が許可される方式。
+
+パスワードの総当り攻撃などもなく、デフォルトのパスワード認証方式よりも安全性が高い。
+
+AWS EC2への接続に使用したのは公開鍵認証だった。pemキーを配下においてSSH接続したことを覚えている。
+
+![https://asf.alaska.edu/wp-content/uploads/2019/03/cloud-recipe-image-1-1700x956.jpg](https://asf.alaska.edu/wp-content/uploads/2019/03/cloud-recipe-image-1-1700x956.jpg)
+
+※画像はイメージ。

@@ -1,0 +1,387 @@
+import { ArticleLayout } from '@/components/ArticleLayout'
+
+export const meta = {
+  author: 'Naoki Hirahara',
+  date: '2021-07-15',
+  title: 'SOLID原則とは',
+  description:
+  'SOLIDの原則とは'
+}
+
+export default (props) => <ArticleLayout meta={meta} {...props} />
+
+## SOLID原則とは
+
+プログラミングの設計手法の一つ。
+
+### 5つの原則からなる。
+
+- S - SRP - The Single Responsibility Principle - 単一責任の原則
+- O - OCP - The Open Closed Principle - オープン・クローズドの原則
+- L - LSP - The Interface Segregation Principle - リスコフの置換原則
+- I - ISP - The Interface Segregation Principle  - インターフェース分離の原則
+- D - DIP - The Dependency Inversion Principle - 依存性逆転の法則
+
+### なぜSOLID原則が必要なのか
+
+**コードのメンテナンス・拡張・テスト簡単に行う**ため。
+
+## SRP - The Single Responsibility Principle 単一責任の原則
+
+![https://miro.medium.com/max/2000/1*P3oONz9Da3Tc1w97fMV73Q.png](https://miro.medium.com/max/2000/1*P3oONz9Da3Tc1w97fMV73Q.png)
+
+> “任せた仕事は1つだけだったのに…”、LokiからSkurgeへ、出典：トロイ、ラグナロク
+クラスに任せる仕事は1つにするべきだ。
+>
+
+> クラスを変更する理由は複数存在してはいけない
+>
+
+ざっくりいうと、クラスの存在理由を明確に定め、複数のメソッドの依存性を高めてはいけない。
+
+そのため、**1つのクラスはひとつだけの責任をもつという原則。**
+
+### なぜか？
+
+結論は**コードのメンテナンス・拡張・テスト簡単に行う**ため。
+
+また、クラスに対して2つ以上の理由で変更を加える時には、
+
+- 複数回の再デプロイ
+- 2チーム以上での修正
+
+の可能性があり、手間がかかる。
+
+## 単一責任の原則を用いたリファクタリング
+
+### 問題の例
+
+下記では、save()にて保存する処理の機能が変更になった場合、Bookクラスごと変更を加える可能性があるため、別な関数にも影響がある可能性がある。
+
+```bash
+class Book {
+    function getTitle() {
+        return "A Great Book";
+    }
+
+    function getAuthor() {
+        return "John Doe";
+
+
+    function getCurrentPage() {
+        return "current page content";
+    }
+		# 保存する機能
+    function save() {
+        $filename = '/documents/'. $this->getTitle(). ' - ' . $this->getAuthor();
+        file_put_contents($filename, serialize($this));
+    }
+}
+```
+
+### 単一責任を取り込んだ例
+
+別なクラスとして定義することで、よりメンテナンスしやすいコードになる。
+
+```bash
+class Book {
+    function getTitle() {
+        return "A Great Book";
+    }
+
+    function getAuthor() {
+        return "John Doe";
+    }
+
+    function getCurrentPage() {
+        return "current page content";
+    }
+}
+
+# 保存する機能をクラスに分ける
+class SimpleFilePersistence {
+
+    function save(Book $book) {
+        $filename = '/documents/' . $book->getTitle() . ' - ' . $book->getAuthor();
+        file_put_contents($filename, serialize($book));
+    }
+
+}
+```
+
+### 参考
+
+[単一責任原則で無責任な多目的クラスを爆殺する - Qiita](https://qiita.com/MinoDriven/items/76307b1b066467cbfd6a)
+
+[SOLIDの原則: Part1 - 単一責任の原則(Single Responsibility Principle)](https://code.tutsplus.com/ja/tutorials/solid-part-1-the-single-responsibility-principle--net-36074)
+
+## ISP - The Interface Segregation Principle インターフェース分離の法則
+
+![https://miro.medium.com/max/5200/1*2hmyR9L43Vm64MYxj4Y89w.png](https://miro.medium.com/max/5200/1*2hmyR9L43Vm64MYxj4Y89w.png)
+
+> クライアントに特化した細粒度のインタフェースを作れ
+クライアントは自分たちが使わないインターフェースに依存することを強いられるべきではない
+>
+
+インターフェイス分離の法則は、複数のメソッドで構成される大きなインターフェイスではなく、小さなインターフェイスを作成することが望ましいとされる。
+
+分離できるインターフェスは分離し、必要な関連するメソッドのみ記載する。
+
+## なぜか？
+
+クラスに複雑で複雑なメソッドを実装することは、無駄が多く、予期しないバグを生む可能性がある。
+
+## インターフェイスとは？
+
+抽象クラス、基底クラス、ダック・タイピングなどのことを指す。
+
+### 抽象クラスって？
+
+抽象メソッドを1つ以上もつクラスのこと。
+
+- 抽象メソッドのコード例
+
+    ```python
+    from abc import ABCMeta
+    from abc import abstractmethod
+
+    #抽象クラスvehicleの定義
+    class vehicle(metaclass = ABCMeta):
+       @abstractmethod
+       def start(self):
+          pass
+       @abstractmethod
+       def stop(self):
+          pass
+
+    #vehicleを継承したクラスcarの定義
+    class car(vehicle):
+       def start(self):
+          print("car start.")
+       def stop(self):
+          print("car stop")
+
+    #vehicleを継承したクラスmotorcycleの定義
+    class motorcycle(vehicle):
+       def start(self):
+          print("moto start.")
+       def stop(self):
+          print("moto stop")
+
+    #テスト部
+    if __name__ == "__main__":
+       mycar = car()
+       mycar.start()
+       mycar.stop()
+    ```
+
+
+[PythonのABCモジュールで抽象クラスを作る方法【初心者向け】 | TechAcademyマガジン](https://techacademy.jp/magazine/19310)
+
+[抽象クラスとは](https://www.javadrive.jp/start/abstract/index1.html)
+
+### 基底クラスって？
+
+スーパークラス・最も親のクラスのこと。
+
+[スーパークラスとは - IT用語辞典](https://e-words.jp/w/%E3%82%B9%E3%83%BC%E3%83%91%E3%83%BC%E3%82%AF%E3%83%A9%E3%82%B9.html)
+
+### ダック・タイピングって？
+
+クラスの型ではなく、オブジェクトの関数や属性が適切かどうかで同じインターフェイスを実装しているように振る舞えること。
+
+[ダックタイピングの何が良いのか - Qiita](https://qiita.com/shimgo/items/9d9fbab1e3a7c4343f7b)
+
+## インターフェイス分離の原則を用いたリファクタリング
+
+### 問題のコード
+
+```python
+from abc import ABCMeta, abstractmethod
+
+class CommiunicationDevice():
+	@abstractmethod
+	def make_calls():
+		pass
+
+	@abstractmethod
+	def send_sms():
+		pass
+
+	@abstractmethod
+	def browse_internet():
+		pass
+
+class SmartPhone(CommunicationDevice):
+	def make_calls():
+		pass
+
+	def send_sms():
+		pass
+
+	def browse_internet():
+		pass
+
+
+class LnadlinePhone(CommunicationDevice):
+	def make_calls():
+		pass
+
+	def send_sms():
+		pass
+
+	def browse_internet():
+		pass
+
+```
+
+### インターフェイス分離の原則を用いたコード
+
+メソッドごとに小さなクラスを作成し、役割を分離している例。
+
+```python
+from abc import ABCMeta, abstractmethod
+
+# それぞれのクラスは、関連するインターフェースのみを使用する
+class CallingDevice():
+	@abstractmethod
+	def make_calls():
+		pass
+
+class MessagingDevice():
+	@abstractmethod
+	def send_sms():
+		pass
+
+class InternetbrowsingDevice():
+	@abstractmethod
+	def browse_internet():
+		pass
+
+class SmartPhone(CallingDevice, MessagingDevice, InternetbrowsingDevice):
+	def make_calls():
+		pass
+
+	def send_sms():
+		pass
+
+	def browse_internet():
+		pass
+
+
+class LnadlinePhone(CommunicationDevice):
+	def make_calls():
+		pass
+```
+
+### SOLID原則の著者の記事
+
+[The S.O.L.I.D Principles in Pictures](https://medium.com/backticks-tildes/the-s-o-l-i-d-principles-in-pictures-b34ce2f1e898)
+
+### 単一責任原則
+
+[単一責任原則 | プログラマが知るべき97のこと](https://xn--97-273ae6a4irb6e2hsoiozc2g4b8082p.com/%E3%82%A8%E3%83%83%E3%82%BB%E3%82%A4/%E5%8D%98%E4%B8%80%E8%B2%AC%E4%BB%BB%E5%8E%9F%E5%89%87/)
+
+[SOLID Design Principles with Python Examples](https://www.linkedin.com/pulse/solid-design-principles-python-examples-hiral-amodia/)
+
+### SOLIDの5つの原則がまとまった記事
+
+[よくわかるSOLID原則5: D（依存性逆転の原則）｜erukiti｜note](https://note.com/erukiti/n/n913e571e8207)
+
+---
+
+## Go言語のecho フレームワーク
+
+### echoの特徴
+
+- 軽量
+- RESTAPI向け
+- 多機能で拡張可能
+- ドキュメントが見やすい
+- マイクロフレームワーク
+- スター数は20.2kでぼちぼち人気
+
+## Golangのフレームワークの比較
+
+現状フレームワークはまばらに使用されている。RubyのRailsの様なこれ！といいったフレームワークはない。
+
+Ginというフレームワークが頭1つ抜けているという状況だが、開発を怠っていた時期があるために人気が低下したらしい。
+
+[2021年7月15日の情報](https://www.notion.so/c9f00e0ff7214493aeca3d64b1edf231)
+
+トレンド的には
+
+1. Gin
+2. echo
+
+で他フレームワークに大差はない。
+
+![https://i.gyazo.com/6697c266d7d15eba10ae8960cbbc58ac.png](https://i.gyazo.com/6697c266d7d15eba10ae8960cbbc58ac.png)
+
+![https://i.gyazo.com/d56815b55a995c6e75e5789f637cc36d.png](https://i.gyazo.com/d56815b55a995c6e75e5789f637cc36d.png)
+
+## 環境構築
+
+```bash
+go mod init smaple_name
+go get github.com/labstack/echo/v4
+```
+
+gov1.14以前であれば、下記コマンド
+
+```bash
+GO111MODULE=on go get github.com/labstack/echo/v4
+```
+
+### Hello World
+
+`server.go` ファイルを作成。
+
+```go
+# server.go
+package main
+
+import (
+	"net/http"
+
+	"github.com/labstack/echo/v4"
+)
+
+func main() {
+	e := echo.New()
+	e.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello, World!")
+	})
+	e.Logger.Fatal(e.Start(":1323"))
+}
+```
+
+サーバーの起動でHello Worldが表示される。
+
+```bash
+go run server.go
+```
+
+## Cookbookというテンプレが有能。
+
+公式で作成されたソースコードがある。
+
+- CRUD
+- Twitter
+- Google App Engine
+
+上記のようなテンプレートが公開されている。
+
+![https://i.gyazo.com/fdeb43385d9d18134982f0c0c55080f0.png](https://i.gyazo.com/fdeb43385d9d18134982f0c0c55080f0.png)
+
+### フレームワークはいらない？net/httpライブラリ
+
+[Goのおすすめのフレームワークはnet／http | フューチャー技術ブログ](https://future-architect.github.io/articles/20210714a/)
+
+### 公式net/http
+
+[http](https://pkg.go.dev/net/http)
+
+### 参考
+
+[Goのアーキテクチャとフレームワークについて - pospomeのプログラミング日記](https://www.pospome.work/entry/2020/04/27/153059)
