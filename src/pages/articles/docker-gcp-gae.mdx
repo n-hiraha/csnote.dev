@@ -1,0 +1,270 @@
+import { ArticleLayout } from '@/components/ArticleLayout'
+
+export const meta = {
+  author: 'Naoki Hirahara',
+  date: '2021-07-14',
+  title: 'docker-compose dockerfile GAEのフレシキブル環境とスタンダード環境',
+  description:
+  'docker-compose dockerfile GAEのフレシキブル環境とスタンダード環境'
+}
+
+export default (props) => <ArticleLayout meta={meta} {...props} />
+
+## Dockerとは
+
+> Docker とは開発者やシステム管理者が、コンテナでアプリケーションを **構築（build）、実行（run）、共有（share）**するためのプラットフォーム
+>
+
+### Dockerの特徴
+
+- **柔軟（Flexible) -** 複雑なアプリケーションをコンテナ化
+- **軽量（Lightweight) -** ホスト・カーネルをコンテナは活用・共有するので、システムリソースに関しては仮想マシンよりも効率的に扱える
+- **可搬性（Portable）-** ローカルで構築、クラウドにデプロイ、どこでも実行
+- **疎結合（Loosely coupled）-** コンテナは、コンテナ自身のことは自分で完結し、カプセル化する。つまり、他の何らかの中断をしなくても置き換えやアップグレードが可能
+- **拡張性（Scalable）-** データセンタ内の至るところで、複製したコンテナの追加と自動分散が可能
+- **安全（Secure）-** 利用者による設定がなくても、コンテナは積極的な制限と分離（isolate）をプロセスに適用できる
+
+### イメージとコンテナ
+
+コンテナにはプロセスが走り、ホストや他のコンテナから隔離 (isolate) するために複数のカプセル化する機能をプロセスに追加する。
+
+> **コンテナ隔離（isolation）の最も重要な特長とは、各コンテナが自分自身のプライベート・ファイルシステムとやりとりできる点です。**
+>
+
+そして、ファイルシステムはDockerイメージによって提供され、アプリケーションの実行に必要なあらゆる設定が必要。
+
+### コンテナと仮想マシン
+
+**コンテナ**
+
+コンテナは Linux 上でネイティブに実行し、ホストマシン上のカーネルを他のコンテナと共有する
+
+**仮想マシン(VM)**
+
+ハイパーバイザを通してホスト・リソースに仮想的にアクセスし、完全な "ゲスト" オペレーティングシステム実行する
+
+![https://docs.docker.jp/_images/container.png](https://docs.docker.jp/_images/container.png)
+
+![https://docs.docker.jp/_images/vm.png](https://docs.docker.jp/_images/vm.png)
+
+![https://i.gyazo.com/cad41351e6e9e1289c344d0b5c947fe1.png](https://i.gyazo.com/cad41351e6e9e1289c344d0b5c947fe1.png)
+
+![https://i.gyazo.com/74f71387637cdf7b68cc1c92cc93005e.png](https://i.gyazo.com/74f71387637cdf7b68cc1c92cc93005e.png)
+
+![https://i.gyazo.com/4e4224a6474f357279f9407ea8363dab.png](https://i.gyazo.com/4e4224a6474f357279f9407ea8363dab.png)
+
+## イメージの構築と実行
+
+---
+
+## Dockerfile
+
+ `Dockerfile` の命令を読み込んで、イメージをビルドすることで `Dockerイメージ`が作成される。イメージを作り上げるためのコマンドをファイルに含めることができる。
+
+つまり、 `Dockerfile` は**コンテナ内の環境で何をするか**定義する管理ファイル。
+
+![https://engineer-life.dev/wp-content/uploads/2020/11/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88-2020-11-22-2.20.44.png](https://engineer-life.dev/wp-content/uploads/2020/11/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88-2020-11-22-2.20.44.png)
+
+**Dockerfileの例：**
+
+```yaml
+# 親イメージとして公式イメージを使う
+FROM node:current-slim
+
+# 作業用（working）ディレクトリを指定
+WORKDIR /usr/src/app
+
+# ホスト上のファイルを現在の場所にコピー
+COPY package.json .
+
+# イメージのファイルシステム内でコマンドを実行
+RUN npm install
+
+# 実行時、コンテナが特定のポートをリッスンするよう Docker に通知
+EXPOSE 8080
+
+# コンテナ内で指定したコマンドを実行
+CMD [ "npm", "start" ]
+
+# 残りのソースコードをホスト上からイメージのファイルシステム上にコピー
+COPY . .
+```
+
+[Dockerfile リファレンス - Docker-docs-ja 19.03 ドキュメント](https://docs.docker.jp/engine/reference/builder.html)
+
+**docker buildコマンド**
+
+ `Dockerfile` と  `コンテキスト （context）`から `dockerイメージ`をビルドするコマンド
+
+- `コンテキスト`とは、指定された PATH や URL に存在している一連のファイルのこと
+
+```bash
+docker build [オプション] PATH | URL | -
+```
+
+[docker build](https://matsuand.github.io/docs.docker.jp.onthefly/engine/reference/commandline/build/)
+
+**docker runコマンド**
+
+ `Dockerイメージ` からコンテナを起動するコマンド
+
+```bash
+docker run [オプション] イメージ[:タグ|@ダイジェスト値] [コマンド] [引数...]
+```
+
+[Docker run リファレンス - Docker-docs-ja 20.10 ドキュメント](https://docs.docker.jp/engine/reference/run.html)
+
+## Docker Compose
+
+複数のコンテナを定義して実行する場合の便利ツールのこと。
+
+単一のコンテナであればDockerfileのみで良いが、下記のような複数のコンテナを使う場合は `Docker Compose` を使う。
+
+![https://engineer-life.dev/wp-content/uploads/2020/11/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88-2020-11-22-2.21.21.png](https://engineer-life.dev/wp-content/uploads/2020/11/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88-2020-11-22-2.21.21.png)
+
+### `Docker Compose`を使う3ステップ
+
+1. **アプリケーション環境を `Dockerfile` に定義する**
+2. **アプリケーションを構成するサービスを `docker-compose.yml` ファイルに定義する**
+3.  **`docker-compose up` でアプリケーション全体を起動・実行する**
+
+[Docker Compose 概要 - Docker-docs-ja 19.03 ドキュメント](https://docs.docker.jp/compose/overview.html)
+
+### docker-compose.ymlファイル
+
+アプリケーションを構成するサービスを定義するファイルのこと
+
+下記を定義してディレクトリのルートに置くのが基本
+
+- [サービス service](https://docs.docker.jp/compose/compose-file.html#service-configuration-reference)
+- [ネットワークnetworks](https://docs.docker.jp/compose/compose-file.html#network-configuration-reference)
+- [ボリューム volumes](https://docs.docker.jp/compose/compose-file.html#volume-configuration-reference)
+
+[Compose ファイル・リファレンス - Docker-docs-ja 19.03 ドキュメント](https://docs.docker.jp/compose/compose-file.html)
+
+### docker-composeでwordpressを構築する
+
+```yaml
+version: '3'
+
+services:
+   db:
+     image: mysql:5.7
+     volumes:
+       - db_data:/var/lib/mysql
+     restart: always
+     environment:
+       MYSQL_ROOT_PASSWORD: somewordpress
+       MYSQL_DATABASE: wordpress
+       MYSQL_USER: wordpress
+       MYSQL_PASSWORD: wordpress
+
+   wordpress:
+     depends_on:
+       - db
+     image: wordpress:latest
+     ports:
+       - "8000:80"
+     restart: always
+     environment:
+       WORDPRESS_DB_HOST: db:3306
+       WORDPRESS_DB_USER: wordpress
+       WORDPRESS_DB_PASSWORD: wordpress
+volumes:
+    db_data:
+```
+
+```yaml
+docker-compose up -d
+```
+
+ [`http://localhost:8000`](http://localhost:8000/) にアクセスするとwordpressが表示できる
+
+![https://i.gyazo.com/dcc6f1aee932ed5a6eb0b9a9d1210dca.png](https://i.gyazo.com/dcc6f1aee932ed5a6eb0b9a9d1210dca.png)
+
+[クィックスタート: Compose と WordPress - Docker-docs-ja 19.03 ドキュメント](https://docs.docker.jp/compose/wordpress.html)
+
+###
+
+## Go + Echo の開発環境をDockerで構築する
+
+---
+
+ `Dockerfile`
+
+![https://i.gyazo.com/ec3415b9fc64a02a5490af845ee5ab85.png](https://i.gyazo.com/ec3415b9fc64a02a5490af845ee5ab85.png)
+
+ `docker-compose.yml`
+
+![https://i.gyazo.com/a14c3ff08a98e4e5c0fa465737016fe6.png](https://i.gyazo.com/a14c3ff08a98e4e5c0fa465737016fe6.png)
+
+ **`server.go` - jsonを返す**
+
+![https://i.gyazo.com/afd507c99024dfde7807dca4b242360c.png](https://i.gyazo.com/afd507c99024dfde7807dca4b242360c.png)
+
+
+
+`docker-compose buld`
+
+![https://i.gyazo.com/8fe8dc102c8dfce47159dfa5c82ded4b.png](https://i.gyazo.com/8fe8dc102c8dfce47159dfa5c82ded4b.png)
+
+
+
+`docker-compose up -d`
+
+![https://i.gyazo.com/c0a3b6db333213df4885a1657f6e44ec.png](https://i.gyazo.com/c0a3b6db333213df4885a1657f6e44ec.png)
+
+ `docker-compose ps`
+
+![https://i.gyazo.com/30bc98fe572da03914ca9ac656041c60.png](https://i.gyazo.com/30bc98fe572da03914ca9ac656041c60.png)
+
+
+
+`[localhost:8080](http://localhost:8080)` にアクセスするとレスポンスが返る
+
+![https://i.gyazo.com/cf2565979adece70001d337647fae5a8.png](https://i.gyazo.com/cf2565979adece70001d337647fae5a8.png)
+
+参考
+
+[効率的に安全な Dockerfile を作るには - Qiita](https://qiita.com/pottava/items/452bf80e334bc1fee69a#dockerfile-%E3%83%99%E3%82%B9%E3%83%88%E3%83%97%E3%83%A9%E3%82%AF%E3%83%86%E3%82%A3%E3%82%B9)
+
+↓↓わかりやすい
+
+[【連載】世界一わかりみが深いコンテナ & Docker入門 〜 その4:docker-composeってなに？ 〜 | SIOS Tech. Lab](https://tech-lab.sios.jp/archives/20051)
+
+## Google App Engine
+
+アプリケーションを迅速かつ柔軟な実環境を構築するPaas のクラウドサービス。
+
+### スタンダード環境
+
+自由度が低い代わりに、設定作業など不要で簡単に始めることができる
+
+[Google App Engine スタンダード環境のドキュメント | Google Cloud](https://cloud.google.com/appengine/docs/standard?hl=ja)
+
+### フレシキブル環境
+
+flexibleとあるように柔軟で自由度が高い環境
+
+GCPインフラ上に  `Dockerコンテナ` が割り当てられ、Iaasに近い環境を作ることができる
+
+### どちらの環境を選択するべきか
+
+ざっくりな印象は下記のとおり
+
+- スタンダード
+    - 簡単に構築でき料金も安い
+- フレシキブル
+    - 細かな設定ができる
+
+気軽に構築できて料金も安いのはスタンダード環境だが、下記の記事もある通りその限りではない
+
+**Zenn.devのGAE環境**
+
+[Google App Engineのスタンダード/フレキシブル環境を選ぶときのヒントと設定の注意点](https://zenn.dev/catnose99/articles/f99ea2a8b985b2)
+
+[Google App Engine フレキシブル環境のドキュメント | Google Cloud](https://cloud.google.com/appengine/docs/flexible?hl=ja)
+
+スタンダードとフレシキブルの比較
+
+[App Engine 環境の選択 | App Engine ドキュメント | Google Cloud](https://cloud.google.com/appengine/docs/the-appengine-environments?hl=ja)
