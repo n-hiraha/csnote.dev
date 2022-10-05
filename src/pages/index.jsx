@@ -223,11 +223,11 @@ export default function Home({ articles }) {
       <Container className='mt-9'>
         <div className='max-w-2xl'>
           <h1 className='text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl'>
-            Software Engineer, Project Manager and Teacher.
+            Software Engineer
           </h1>
           <p className='mt-6 text-base text-zinc-600 dark:text-zinc-400'>
-            大学在学中にプログラミングを学び始め、大学3年次からフルタイムでエンジニアインターンを開始。東京と福岡を拠点にソフトウェアエンジニア/プロジェクトマネージャー/企業研修講師をしています。
-            得意な領域はTypescript/React/Nextjs/Go/AWS/GCPです。
+            大学在学中にプログラミングを学び始流。東京と福岡を拠点にソフトウェアエンジニア/企業研修講師をしています。
+            得意な領域はTypescript/Nextjs/Go/AWS/GCPです。
             幼少期から何か作るのが好き。
           </p>
           <div className='mt-6 flex gap-6'>
@@ -263,7 +263,7 @@ export default function Home({ articles }) {
             ))}
           </div>
           <div className='space-y-10 lg:pl-16 xl:pl-24'>
-            <Newsletter />
+            {/*<Newsletter />*/}
             <Resume />
           </div>
         </div>
