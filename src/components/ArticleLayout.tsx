@@ -22,6 +22,7 @@ function ArrowLeftIcon(props) {
 export function ArticleLayout({
   children,
   meta,
+  content,
   isRssFeed = false,
   previousPathname,
 }: any) {
@@ -31,6 +32,7 @@ export function ArticleLayout({
     return children
   }
 
+  console.log(meta)
   return (
     <>
       <Head>
@@ -63,7 +65,7 @@ export function ArticleLayout({
                   <span className='ml-3'>{formatDate(meta.date)}</span>
                 </time>
               </header>
-              <Prose className='mt-8'>{children}</Prose>
+              <Prose className='mt-8'>{content}</Prose>
             </article>
           </div>
         </div>

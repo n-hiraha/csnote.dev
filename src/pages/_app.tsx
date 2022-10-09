@@ -3,8 +3,9 @@ import { useEffect, useRef } from 'react'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 
+import type { AppProps } from 'next/app'
+
 import '@/styles/tailwind.css'
-import 'focus-visible'
 
 function usePrevious(value) {
   let ref = useRef()
@@ -16,7 +17,7 @@ function usePrevious(value) {
   return ref.current
 }
 
-export default function MyApp({ Component, pageProps, router }) {
+export default function MyApp({ Component, pageProps, router }: AppProps) {
   let previousPathname = usePrevious(router.pathname)
 
   return (

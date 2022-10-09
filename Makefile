@@ -4,5 +4,5 @@ start-development:
 stop-development:
 	docker compose -f ./docker-compose.yml down
 
-start-local:
+up:
 	npm run dev -- -p 3002

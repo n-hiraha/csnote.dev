@@ -22,6 +22,7 @@
     "fast-glob": "^3.2.11",
     "feed": "^4.2.2",
     "focus-visible": "^5.2.0",
+    "graphql-request": "^5.0.0",
     "next": "^12.3.1",
     "postcss-focus-visible": "^6.0.4",
     "react": "18.2.0",
@@ -35,9 +36,13 @@
     "eslint-config-next": "12.2.5",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-unused-imports": "^2.0.0",
+    "graphql-tag": "^2.12.6",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
+    "postcss": "^8.4.17",
     "prettier": "^2.7.1",
-    "prettier-plugin-tailwindcss": "^0.1.11"
+    "prettier-plugin-tailwindcss": "^0.1.11",
+    "react-markdown": "^8.0.3",
+    "react-syntax-highlighter": "^15.5.0"
   }
 }
