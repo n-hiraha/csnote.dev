@@ -13,7 +13,8 @@ const nextConfig = {
     outputStandalone: true,
   },
   env: {
-    API_DOMAIN: process.env.API_DOMAIN,
+    NEXT_PUBLIC_HYGRAPH_CONTENT_API_URL:
+      process.env.NEXT_PUBLIC_HYGRAPH_CONTENT_API_URL,
   },
   images: {
     domains: ['storage.googleapis.com'],
