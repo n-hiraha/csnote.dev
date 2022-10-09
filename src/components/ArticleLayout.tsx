@@ -32,7 +32,6 @@ export function ArticleLayout({
     return children
   }
 
-  console.log(meta)
   return (
     <>
       <Head>

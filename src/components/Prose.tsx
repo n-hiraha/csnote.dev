@@ -4,7 +4,6 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { nord } from 'react-syntax-highlighter/dist/cjs/styles/hljs'
 
 export function Prose({ children, className }) {
-  console.log(children)
   return (
     <div className={clsx(className, 'prose dark:prose-invert')}>
       <ReactMarkdown

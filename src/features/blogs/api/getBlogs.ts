@@ -16,6 +16,5 @@ export async function getBlogBySlug(slug: string | string[]) {
     stage: 'PUBLISHED',
     slug,
   })
-  console.log(data.blog, 'data')
   return data.blog
 }

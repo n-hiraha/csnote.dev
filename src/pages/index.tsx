@@ -270,12 +270,7 @@ export default function Home({ blogs }) {
 }
 
 export async function getStaticProps() {
-  // if (process.env.NODE_ENV === 'production') {
-  //   await generateRssFeed()
-  // }
-
   const blogs = (await getAllBlogs()) || []
-  console.log(blogs)
 
   return {
     props: {
